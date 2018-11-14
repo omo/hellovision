@@ -8,6 +8,7 @@ import android.hardware.camera2.CameraManager
 import es.flakiness.hellocam.rx.errorAndComplete
 import es.flakiness.hellocam.log
 import es.flakiness.hellocam.logThen
+import es.flakiness.hellocam.rx.Disposer
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -15,11 +16,7 @@ import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.atomic.AtomicBoolean
 
 class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spec: CameraCharacteristics, val thread: KameraThread) :
-    Disposable {
-    var disposed = AtomicBoolean(false)
-
-    override fun isDisposed() = disposed.get()
-    override fun dispose() = if (disposed.compareAndSet(false, true)) device.close() else Unit
+    Disposable by Disposer({ device.close() }){
 
     companion object {
         private data class DeviceParams(val thread: KameraThread, val manager: CameraManager, val id: String, val spec: CameraCharacteristics)

@@ -1,23 +1,36 @@
 package es.flakiness.hellocam.kamera
 
 import android.hardware.camera2.CameraCaptureSession
+import android.hardware.camera2.CameraDevice
+import android.hardware.camera2.CaptureFailure
+import android.hardware.camera2.CaptureRequest
 import android.hardware.camera2.params.OutputConfiguration
 import android.hardware.camera2.params.SessionConfiguration
 import android.view.Surface
 import es.flakiness.hellocam.errorThen
 import es.flakiness.hellocam.log
 import es.flakiness.hellocam.logThen
+import es.flakiness.hellocam.rx.Disposer
+import es.flakiness.hellocam.warn
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 
 class KameraSession(val device : KameraDevice, val session: CameraCaptureSession) :
-    Disposable {
-    override fun dispose() {
-        TODO("not implemented")
-    }
+    Disposable by Disposer({ session.close() }){
 
-    override fun isDisposed(): Boolean {
-        TODO("not implemented")
+    fun startPreview(surface: KameraSurface) {
+        val req = device.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
+            addTarget(surface.surface)
+        }.build()
+
+        session.setRepeatingRequest(req, object: CameraCaptureSession.CaptureCallback() {
+            override fun onCaptureSequenceAborted(session: CameraCaptureSession, sequenceId: Int)
+                    = warn("Preview onCaptureSequenceAborted")
+            override fun onCaptureFailed(session: CameraCaptureSession, request: CaptureRequest, failure: CaptureFailure)
+                    = warn("Preview onCaptureFailed")
+            override fun onCaptureBufferLost(session: CameraCaptureSession, request: CaptureRequest, target: Surface, frameNumber: Long)
+                    = warn("Preview onBufferLost")
+        }, device.thread.handler)
     }
 
     companion object {

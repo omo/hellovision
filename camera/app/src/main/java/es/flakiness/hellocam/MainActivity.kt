@@ -18,20 +18,10 @@ import io.reactivex.plugins.RxJavaPlugins
 import kotlinx.android.synthetic.main.layout_main.viewfinder
 
 
+// XXX: Implement disposable
 class Shooter(session: KameraSession, viewfinder: KameraSurface) {
     init {
-        val req = session.device.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-            addTarget(viewfinder.surface)
-        }.build()
-
-        session.session.setRepeatingRequest(req, object: CameraCaptureSession.CaptureCallback() {
-            override fun onCaptureSequenceAborted(session: CameraCaptureSession, sequenceId: Int)
-                    = warn("Preview onCaptureSequenceAborted")
-            override fun onCaptureFailed(session: CameraCaptureSession, request: CaptureRequest, failure: CaptureFailure)
-                    = warn("Preview onCaptureFailed")
-            override fun onCaptureBufferLost(session: CameraCaptureSession, request: CaptureRequest, target: Surface, frameNumber: Long)
-                    = warn("Preview onBufferLost")
-        }, session.device.thread.handler)
+        session.startPreview(viewfinder)
     }
 }
 

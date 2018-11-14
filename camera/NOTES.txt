@@ -1,0 +1,8 @@
+
+
+# 11/09
+
+Next:
++ Deal with the VF error handling somehow and move on. Don't make it too serious for now.
+- Make VF work somehow.
+- Call onComplete() for my observables.

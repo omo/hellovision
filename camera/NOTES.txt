@@ -1,8 +1,15 @@
 
 
-# 11/09
+TODO:
 
-Next:
-+ Deal with the VF error handling somehow and move on. Don't make it too serious for now.
-- Make VF work somehow.
-- Call onComplete() for my observables.
+- Give the correct aspect ratio to the preview
+- Stop things proactively on onStop
+- Do some cleanup
+
+> Take a picture
+  - Put shutter button (or just handle tap?)
+  - Setup ImageReader
+  - Q: Where should the images go? -> Internal storage for now.
+
+> Setup GL for the viewfinder
+

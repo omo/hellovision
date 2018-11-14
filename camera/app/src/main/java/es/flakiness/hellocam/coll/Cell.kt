@@ -1,4 +1,4 @@
-package es.flakiness.hellocam
+package es.flakiness.hellocam.coll
 
 class Cell<T> {
     var ref : T? = null

@@ -2,10 +2,9 @@ package es.flakiness.hellocam
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Size
-import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.FrameLayout
+import es.flakiness.hellocam.kamera.KameraSurface
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 

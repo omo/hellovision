@@ -5,6 +5,9 @@ import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
+import android.util.Size
+import es.flakiness.hellocam.kamera.ag.area
+import es.flakiness.hellocam.kamera.ag.toPortrait
 import es.flakiness.hellocam.rx.errorAndComplete
 import es.flakiness.hellocam.log
 import es.flakiness.hellocam.logThen
@@ -13,10 +16,21 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.atomic.AtomicBoolean
 
 class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spec: CameraCharacteristics, val thread: KameraThread) :
     Disposable by Disposer({ device.close() }){
+
+    fun <T> sizeFor(constraints: Size, klass: Class<T>) : Size {
+        val candidates = spec.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(klass)
+        return candidates.fold(Size(0, 0)) { a, i ->
+            if (i.height > constraints.height || i.width > constraints.width) // Too big
+                a
+            else if (i.area < a.area) // Smaller than the current match
+            a
+            else
+                i
+        }
+    }
 
     companion object {
         private data class DeviceParams(val thread: KameraThread, val manager: CameraManager, val id: String, val spec: CameraCharacteristics)

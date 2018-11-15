@@ -1,10 +1,10 @@
 package es.flakiness.hellocam
 
 import android.app.Activity
-import android.hardware.camera2.*
 import android.hardware.camera2.params.OutputConfiguration
 import android.os.Bundle
-import android.view.Surface
+import android.util.Size
+import android.view.SurfaceHolder
 import es.flakiness.hellocam.kamera.KameraDevice
 import es.flakiness.hellocam.kamera.KameraSession
 import es.flakiness.hellocam.kamera.KameraSurface
@@ -15,7 +15,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.plugins.RxJavaPlugins
-import kotlinx.android.synthetic.main.layout_main.viewfinder
+import kotlinx.android.synthetic.main.layout_main.*
 
 
 // XXX: Implement disposable
@@ -62,7 +62,15 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_main)
         // TODO(morrita): Dispose appropriately
-        val camera = Camera(KameraDevice.create(this), viewfinder.surfaces)
+
+        val device = KameraDevice.create(this).doOnSuccess { d ->
+            // XX: Unsub if disposed
+            viewfinder.viewRects.subscribe {
+                viewfinder.previewSize = d.sizeFor(Size(it.width(), it.height()), SurfaceHolder::class.java)
+            }
+        }
+
+        val camera = Camera(device, viewfinder.surfaces)
         camera.open().subscribe(
             {},
             { e ->

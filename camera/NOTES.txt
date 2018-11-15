@@ -2,9 +2,10 @@
 
 TODO:
 
-- Give the correct aspect ratio to the preview
++ Give the correct aspect ratio to the preview
 - Stop things proactively on onStop
 - Do some cleanup
+  - Extract preview to a class
 
 > Take a picture
   - Put shutter button (or just handle tap?)

@@ -2,6 +2,7 @@ import com.google.common.truth.Truth
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import org.junit.Before
 import org.junit.Test
@@ -78,5 +79,11 @@ class HelloTest {
 
         Truth.assertThat(subCount.get()).isEqualTo(1)
 //        Truth.assertThat(nextCount.get()).isEqualTo(5)
+    }
+
+    @Test
+    fun subscribeBehaviorSubjectWithNoValue() {
+        val subject = BehaviorSubject.create<Int>()
+        subject.subscribe()
     }
 }

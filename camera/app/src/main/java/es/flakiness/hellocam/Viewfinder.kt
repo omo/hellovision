@@ -22,7 +22,7 @@ class Viewfinder @JvmOverloads constructor(
     private val surfaceView = SurfaceView(context)
 
     private val surfaceSubject = BehaviorSubject.create<KameraSurface>()
-    val surfaces: Observable<KameraSurface> get() = KameraSurface.createFrom(surfaceView.holder).filter{ previewSize != null }
+    val surfaces: Observable<KameraSurface> get() = KameraSurface.createFrom(surfaceView.holder).filter{ previewSize == it.size }
     private val viewRectSubject = BehaviorSubject.create<Rect>()
     val viewRects: Observable<Rect> = viewRectSubject.distinctUntilChanged()
 

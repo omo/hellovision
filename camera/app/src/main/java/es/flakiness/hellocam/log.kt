@@ -2,18 +2,23 @@ package es.flakiness.hellocam
 
 import android.util.Log
 
-private val TAG = "HelloCam"
+val TAG = "HelloCam"
 
-fun log(message: String) : Unit { Log.d(TAG, message) }
-fun warn(message: String) : Unit { Log.w(TAG, message) }
-fun <E : Throwable>error(error: E, message: String = "Error!") : Unit { Log.e(TAG, message, error) }
+inline fun log(message: String) : Unit { Log.d(TAG, message) }
+inline fun warn(message: String) : Unit { Log.w(TAG, message) }
+inline fun <E : Throwable>error(error: E, message: String = "Error!") : Unit { Log.e(TAG, message, error) }
 
-fun <T>logThen(result: T, message: String) : T = result.also { log(message) }
-fun <T>warnThen(result: T, message: String) : T = result.also { log(message) }
-fun <E : Throwable>warnThen(e: E) : E = e.apply { warn(toString()) }
-fun <E : Throwable>errorThen(e: E, message: String = "Error!") : E = e.apply { error(e, message) }
+inline fun <T>logThen(message: String, result: T) : T = result.also { log(message) }
+inline fun <T>logThen(message: String, action: () -> T) : T {
+    log(message)
+    return action()
+}
 
-fun <E : Throwable>errorThenThrow(e: E) {
+inline fun <T>warnThen(message: String, result: T) : T = result.also { log(message) }
+inline fun <E : Throwable>warnThen(e: E) : E = e.apply { warn(toString()) }
+inline fun <E : Throwable>errorThen(message: String = "Error!", e: E) : E = e.apply { error(e, message) }
+
+inline fun <E : Throwable>errorThenThrow(e: E) {
     error(e)
     throw e
 }

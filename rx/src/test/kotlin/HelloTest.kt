@@ -8,6 +8,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(JUnit4::class)
@@ -85,5 +86,17 @@ class HelloTest {
     fun subscribeBehaviorSubjectWithNoValue() {
         val subject = BehaviorSubject.create<Int>()
         subject.subscribe()
+    }
+
+    @Test
+    fun completableAmbWith() {
+        val px = PublishSubject.create<Unit>()
+        val py = PublishSubject.create<Unit>()
+        val c = Completable.fromObservable(px).ambWith(Completable.fromObservable(py))
+        val sawError = AtomicBoolean(false)
+        c.subscribe({}, { sawError.set(true) })
+
+        px.onError(RuntimeException("XXX"))
+        Truth.assertThat(sawError.get()).isTrue()
     }
 }

@@ -9,7 +9,8 @@ class Disposer(private val disposeUs: () -> Unit) : Disposable {
     override fun isDisposed(): Boolean = closed.get()
 
     override fun dispose() : Unit {
-        if (closed.compareAndSet(false, true))
+        if (closed.compareAndSet(false, true)) {
             disposeUs()
+        }
     }
 }

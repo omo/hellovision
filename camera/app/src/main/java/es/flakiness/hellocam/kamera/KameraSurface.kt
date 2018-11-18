@@ -21,12 +21,12 @@ class KameraSurface(val surface: Surface, val size: Size, val maybeFail: Complet
                     lastCompletion.set(PublishSubject.create())
                     this@apply.onNext(
                         logThen(
+                            "surfaceChanged　w=${width} h=${height}",
                             KameraSurface(
                                 holder!!.surface,
                                 Size(width, height),
                                 Completable.fromObservable(lastCompletion.ref!!).cache()
-                            ),
-                            "surfaceChanged"
+                            )
                         )
                     )
                 }

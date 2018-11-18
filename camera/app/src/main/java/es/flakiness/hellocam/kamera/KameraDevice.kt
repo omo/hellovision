@@ -7,7 +7,6 @@ import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
 import android.util.Size
 import es.flakiness.hellocam.kamera.ag.area
-import es.flakiness.hellocam.kamera.ag.toPortrait
 import es.flakiness.hellocam.rx.errorAndComplete
 import es.flakiness.hellocam.log
 import es.flakiness.hellocam.logThen
@@ -18,17 +17,20 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 
 class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spec: CameraCharacteristics, val thread: KameraThread) :
-    Disposable by Disposer({ device.close() }){
+    Disposable by Disposer({ logThen("KameraDevice#dispose"){ device.close() } }) {
 
     fun <T> sizeFor(constraints: Size, klass: Class<T>) : Size {
         val candidates = spec.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(klass)
         return candidates.fold(Size(0, 0)) { a, i ->
-            if (i.height > constraints.height || i.width > constraints.width) // Too big
-                a
-            else if (i.area < a.area) // Smaller than the current match
-            a
-            else
-                i
+            if (i.height > constraints.height || i.width > constraints.width) { // Too big
+                return@fold a
+            }
+
+            if (i.area < a.area) { // Smaller than the current match
+                return@fold a
+            }
+
+            i
         }
     }
 
@@ -41,6 +43,10 @@ class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spe
             val thread = KameraThread()
             val manager: CameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
             val idAndSpec = selectDevice(manager)
+            if (it.isDisposed) {
+                return@create thread.dispose()
+            }
+
             it.onSuccess(DeviceParams(thread, manager, idAndSpec.first, idAndSpec.second))
         }.flatMap { params ->
             Single.create<Pair<CameraDevice, Completable>> {
@@ -51,13 +57,18 @@ class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spe
                         log("Device onClosed")
 
                     override fun onOpened(camera: CameraDevice) {
-                        it.onSuccess(logThen(Pair(camera, maybeFail), "Device onOpened"))
+                        if (it.isDisposed) {
+                            params.thread.dispose()
+                            return camera.close()
+                        }
+
+                        it.onSuccess(logThen("Device onOpened", Pair(camera, maybeFail)))
                     }
 
                     override fun onDisconnected(camera: CameraDevice) {
                         val error = logThen(
-                            KameraRuntimeException("Disconnected"),
-                            "Device Disconnected!"
+                            "Device Disconnected!",
+                            KameraRuntimeException("Disconnected")
                         )
                         errorSubject.errorAndComplete(error)
                         it.onError(error)
@@ -65,8 +76,8 @@ class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spe
 
                     override fun onError(camera: CameraDevice, error: Int) {
                         logThen(
-                            KameraRuntimeException("Error: ${error}"),
-                            "Device Error"
+                            "Device Error",
+                            KameraRuntimeException("Error: ${error}")
                         ).apply {
                             errorSubject.errorAndComplete(this)
                             it.onError(this)

@@ -1,4 +1,4 @@
-package es.flakiness.hellocam
+package es.flakiness.hellocam.habit.log
 
 import android.util.Log
 
@@ -16,7 +16,12 @@ inline fun <T>logThen(message: String, action: () -> T) : T {
 
 inline fun <T>warnThen(message: String, result: T) : T = result.also { log(message) }
 inline fun <E : Throwable>warnThen(e: E) : E = e.apply { warn(toString()) }
-inline fun <E : Throwable>errorThen(message: String = "Error!", e: E) : E = e.apply { error(e, message) }
+inline fun <E : Throwable>errorThen(message: String = "Error!", e: E) : E = e.apply {
+    error(
+        e,
+        message
+    )
+}
 
 inline fun <E : Throwable>errorThenThrow(e: E) {
     error(e)

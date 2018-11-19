@@ -2,12 +2,12 @@ package es.flakiness.hellocam
 
 import android.content.Context
 import android.graphics.Rect
-import android.hardware.camera2.CameraDevice
 import android.util.AttributeSet
 import android.util.Size
 import android.view.Gravity
 import android.view.SurfaceView
 import android.widget.FrameLayout
+import es.flakiness.hellocam.habit.log.log
 import es.flakiness.hellocam.kamera.KameraSurface
 import es.flakiness.hellocam.kamera.ag.fit
 import es.flakiness.hellocam.kamera.ag.toPortrait
@@ -21,8 +21,7 @@ class Viewfinder @JvmOverloads constructor(
 
     private val surfaceView = SurfaceView(context)
 
-    private val surfaceSubject = BehaviorSubject.create<KameraSurface>()
-    val surfaces: Observable<KameraSurface> get() = KameraSurface.createFrom(surfaceView.holder).filter{ previewSize == it.size }
+    val surfaces: Observable<KameraSurface> get() = KameraSurface.createFrom(surfaceView.holder, SURFACE_NAME).filter{ previewSize == it.size }
     private val viewRectSubject = BehaviorSubject.create<Rect>()
     val viewRects: Observable<Rect> = viewRectSubject.distinctUntilChanged()
 
@@ -55,5 +54,9 @@ class Viewfinder @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         viewRectSubject.onNext(Rect(left, top, right, bottom))
+    }
+
+    companion object {
+        val SURFACE_NAME = "viewfindner"
     }
 }

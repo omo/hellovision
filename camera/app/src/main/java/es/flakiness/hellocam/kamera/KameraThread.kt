@@ -2,8 +2,8 @@ package es.flakiness.hellocam.kamera
 
 import android.os.Handler
 import android.os.HandlerThread
-import es.flakiness.hellocam.logThen
-import es.flakiness.hellocam.rx.Disposer
+import es.flakiness.hellocam.habit.log.logThen
+import es.flakiness.hellocam.habit.rx.Disposer
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.Executor
 

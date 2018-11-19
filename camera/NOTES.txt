@@ -3,14 +3,15 @@
 TODO:
 
 + Give the correct aspect ratio to the preview
-- Stop things proactively on onStop
-- Do some cleanup
-  - Extract preview to a class
++ Stop things proactively on onStop
++ Do some cleanup
 
 > Take a picture
   - Put shutter button (or just handle tap?)
   - Setup ImageReader
   - Q: Where should the images go? -> Internal storage for now.
+
+- Extract preview to a class
 
 > Setup GL for the viewfinder
 

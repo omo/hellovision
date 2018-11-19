@@ -7,11 +7,11 @@ import android.hardware.camera2.CaptureRequest
 import android.hardware.camera2.params.OutputConfiguration
 import android.hardware.camera2.params.SessionConfiguration
 import android.view.Surface
-import es.flakiness.hellocam.errorThen
-import es.flakiness.hellocam.log
-import es.flakiness.hellocam.logThen
-import es.flakiness.hellocam.rx.Disposer
-import es.flakiness.hellocam.warn
+import es.flakiness.hellocam.habit.log.errorThen
+import es.flakiness.hellocam.habit.log.log
+import es.flakiness.hellocam.habit.log.logThen
+import es.flakiness.hellocam.habit.rx.Disposer
+import es.flakiness.hellocam.habit.log.warn
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
@@ -22,9 +22,10 @@ class KameraSession(val device : KameraDevice, val session: CameraCaptureSession
         logThen("KameraSesssion#dispose") { session.close() }
     }){
 
-    fun startPreview(surface: KameraSurface) {
+    // TODO(morrita): Needs better name.
+    fun startPreview(surfaces: List<KameraSurface>) {
         val req = device.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-            addTarget(surface.surface)
+            surfaces.forEach { addTarget(it.surface) }
         }.build()
 
         session.setRepeatingRequest(req, object: CameraCaptureSession.CaptureCallback() {

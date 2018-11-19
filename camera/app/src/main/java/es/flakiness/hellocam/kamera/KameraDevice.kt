@@ -7,17 +7,17 @@ import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
 import android.util.Size
 import es.flakiness.hellocam.kamera.ag.area
-import es.flakiness.hellocam.rx.errorAndComplete
-import es.flakiness.hellocam.log
-import es.flakiness.hellocam.logThen
-import es.flakiness.hellocam.rx.Disposer
+import es.flakiness.hellocam.habit.rx.errorAndComplete
+import es.flakiness.hellocam.habit.log.log
+import es.flakiness.hellocam.habit.log.logThen
+import es.flakiness.hellocam.habit.rx.Disposer
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 
 class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spec: CameraCharacteristics, val thread: KameraThread) :
-    Disposable by Disposer({ logThen("KameraDevice#dispose"){ device.close() } }) {
+    Disposable by Disposer({ logThen("KameraDevice#dispose") { device.close() } }) {
 
     fun <T> sizeFor(constraints: Size, klass: Class<T>) : Size {
         val candidates = spec.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(klass)
@@ -62,7 +62,12 @@ class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spe
                             return camera.close()
                         }
 
-                        it.onSuccess(logThen("Device onOpened", Pair(camera, maybeFail)))
+                        it.onSuccess(
+                            logThen(
+                                "Device onOpened",
+                                Pair(camera, maybeFail)
+                            )
+                        )
                     }
 
                     override fun onDisconnected(camera: CameraDevice) {

@@ -1,4 +1,4 @@
-package es.flakiness.hellocam.rx
+package es.flakiness.hellocam.habit.rx
 
 import io.reactivex.disposables.Disposable
 

@@ -19,8 +19,9 @@ import io.reactivex.subjects.PublishSubject
 class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spec: CameraCharacteristics, val thread: KameraThread) :
     Disposable by Disposer({ logThen("KameraDevice#dispose") { device.close() } }) {
 
-    fun <T> sizeFor(constraints: Size, klass: Class<T>) : Size {
-        val candidates = spec.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(klass)
+    fun fitSizeFor(constraints: Size, format: Int) : Size {
+        // XXX: Align the orientations of the rectangles.
+        val candidates = spec.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(format)
         return candidates.fold(Size(0, 0)) { a, i ->
             if (i.height > constraints.height || i.width > constraints.width) { // Too big
                 return@fold a
@@ -32,6 +33,11 @@ class KameraDevice(val device: CameraDevice, val maybeFail: Completable, val spe
 
             i
         }
+    }
+
+    fun largestFor(format: Int) : Size {
+        val candidates = spec.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(format)
+        return candidates.fold(Size(0, 0)) { a, i -> if (a.area < i.area) i else a }
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package es.flakiness.hellocam.kamera
 
+import android.hardware.camera2.params.OutputConfiguration
 import android.util.Size
 import android.view.Surface
 import android.view.SurfaceHolder
@@ -10,10 +11,13 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
-class KameraSurface(val surface: Surface, val size: Size, val name: String,  val ownerType: Class<out Any>, val maybeFail: Completable) {
+class KameraOutput(val surface: Surface, val size: Size, val name: String, val maybeFail: Completable = Completable.never()) {
+
+    fun toOutput() : OutputConfiguration = OutputConfiguration(surface)
+
     companion object {
         // Note that this stream never completes.
-        fun createFrom(holder: SurfaceHolder, name: String) : Observable<KameraSurface> = PublishSubject.create<KameraSurface>().apply {
+        fun createFrom(holder: SurfaceHolder, name: String, repeating: Boolean): Observable<KameraOutput> = PublishSubject.create<KameraOutput>().apply {
             val lastCompletion: Cell<PublishSubject<Unit>> =
                 Cell()
             holder.addCallback(object : SurfaceHolder.Callback {
@@ -22,11 +26,10 @@ class KameraSurface(val surface: Surface, val size: Size, val name: String,  val
                     this@apply.onNext(
                         logThen(
                             "surfaceChanged　w=${width} h=${height}",
-                            KameraSurface(
+                            KameraOutput(
                                 holder!!.surface,
                                 Size(width, height),
                                 name,
-                                SurfaceHolder::class.java,
                                 Completable.fromObservable(lastCompletion.ref!!).cache()
                             )
                         )

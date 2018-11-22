@@ -8,7 +8,7 @@ import android.view.Gravity
 import android.view.SurfaceView
 import android.widget.FrameLayout
 import es.flakiness.hellocam.habit.log.log
-import es.flakiness.hellocam.kamera.KameraSurface
+import es.flakiness.hellocam.kamera.KameraOutput
 import es.flakiness.hellocam.kamera.ag.fit
 import es.flakiness.hellocam.kamera.ag.toPortrait
 import io.reactivex.Observable
@@ -21,7 +21,7 @@ class Viewfinder @JvmOverloads constructor(
 
     private val surfaceView = SurfaceView(context)
 
-    val surfaces: Observable<KameraSurface> get() = KameraSurface.createFrom(surfaceView.holder, SURFACE_NAME).filter{ previewSize == it.size }
+    val surfaces: Observable<KameraOutput> get() = KameraOutput.createFrom(surfaceView.holder, SURFACE_NAME, true).filter{ previewSize == it.size }
     private val viewRectSubject = BehaviorSubject.create<Rect>()
     val viewRects: Observable<Rect> = viewRectSubject.distinctUntilChanged()
 

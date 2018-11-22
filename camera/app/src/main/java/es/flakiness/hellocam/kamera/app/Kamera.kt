@@ -3,7 +3,7 @@ package es.flakiness.hellocam.kamera.app
 import android.hardware.camera2.params.OutputConfiguration
 import es.flakiness.hellocam.kamera.KameraDevice
 import es.flakiness.hellocam.kamera.KameraSession
-import es.flakiness.hellocam.kamera.KameraSurface
+import es.flakiness.hellocam.kamera.KameraOutput
 import es.flakiness.hellocam.habit.log.log
 import es.flakiness.hellocam.habit.rx.DisposableRef
 import es.flakiness.hellocam.habit.rx.Disposer
@@ -15,7 +15,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 
 class Kamera(device: Single<KameraDevice>,
-             viewfinderSurfaces: Observable<List<KameraSurface>>,
+             viewfinderSurfaces: Observable<List<KameraOutput>>,
              private val onError: (Throwable) -> Unit)
     : Disposable {
 
@@ -37,13 +37,13 @@ class Kamera(device: Single<KameraDevice>,
         Observable.combineLatest(
             it,
             viewfinderSurfaces,
-            BiFunction { d: KameraDevice, s: List<KameraSurface> ->
+            BiFunction { d: KameraDevice, s: List<KameraOutput> ->
                 Pair(d, s)
             }).flatMap { ds ->
 
 
-            val surfaces = ds.second
-            if (surfaces.any { !it.surface.isValid }) {
+            val outputs = ds.second
+            if (outputs.any { !it.surface.isValid }) {
                 // Got abandoned Surface (which was cached). This can happen right after onStart().
                 // Expect another Surface is coming up from the stream.
                 // TODO(morrita): Reject only the failure from the surface from SurfaceView.
@@ -51,10 +51,9 @@ class Kamera(device: Single<KameraDevice>,
                 return@flatMap Observable.empty<Shooter>()
             }
 
-            val configs = surfaces.map { i -> OutputConfiguration(i.surface) }
-            KameraSession.create(ds.first, configs)
+            KameraSession.create(ds.first, outputs.map(KameraOutput::toOutput))
                 .toObservable().map { sess ->
-                Shooter(sess, surfaces).apply {
+                Shooter(sess, outputs).apply {
                     last.ref = this
                 }
             }

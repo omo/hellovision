@@ -1,16 +1,13 @@
 package es.flakiness.hellocam.kamera.app
 
-import android.graphics.ImageFormat
 import android.media.Image
 import android.media.ImageReader
 import android.util.Size
 import es.flakiness.hellocam.habit.log.log
-import es.flakiness.hellocam.habit.log.logIf
 import es.flakiness.hellocam.habit.rx.Disposer
 import es.flakiness.hellocam.kamera.KameraDevice
-import es.flakiness.hellocam.kamera.KameraSurface
+import es.flakiness.hellocam.kamera.KameraOutput
 import es.flakiness.hellocam.kamera.KameraThread
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.atomic.AtomicReference
@@ -24,12 +21,10 @@ class ImageSink(val reader: ImageReader, thread: KameraThread) :
     private val image = AtomicReference<Image>(null);
     private var imageCount = 0
 
-    val surface: KameraSurface = KameraSurface(
+    val output: KameraOutput = KameraOutput(
         reader.surface,
         Size(reader.width, reader.height),
-        "sink",
-        ImageReader::class.java,
-        Completable.never()
+        "sink"
     )
 
     init {
@@ -46,7 +41,7 @@ class ImageSink(val reader: ImageReader, thread: KameraThread) :
         }
 
         image.getAndSet(nextImage)?.close()
-        logIf(++imageCount % 10 == 0, { "Image count: ${imageCount}" })
+        imageCount++
     }
 
     companion object {
@@ -58,7 +53,7 @@ class ImageSink(val reader: ImageReader, thread: KameraThread) :
                     size.width,
                     size.height,
                     format,
-                    3
+                    10
                 ), d.thread
             )
         }

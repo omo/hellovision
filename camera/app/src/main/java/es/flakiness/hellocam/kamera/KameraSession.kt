@@ -22,22 +22,6 @@ class KameraSession(val device : KameraDevice, val session: CameraCaptureSession
         logThen("KameraSesssion#dispose") { session.close() }
     }){
 
-    // TODO(morrita): Needs better name.
-    fun startPreview(surfaces: List<KameraSurface>) {
-        val req = device.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-            surfaces.forEach { addTarget(it.surface) }
-        }.build()
-
-        session.setRepeatingRequest(req, object: CameraCaptureSession.CaptureCallback() {
-            override fun onCaptureSequenceAborted(session: CameraCaptureSession, sequenceId: Int)
-                    = warn("Preview onCaptureSequenceAborted")
-            override fun onCaptureFailed(session: CameraCaptureSession, request: CaptureRequest, failure: CaptureFailure)
-                    = warn("Preview onCaptureFailed")
-            override fun onCaptureBufferLost(session: CameraCaptureSession, request: CaptureRequest, target: Surface, frameNumber: Long)
-                    = warn("Preview onBufferLost")
-        }, device.thread.handler)
-    }
-
     companion object {
        fun create(device: KameraDevice, ocs: List<OutputConfiguration>): Single<KameraSession> =
             Single.create<KameraSession> { src ->

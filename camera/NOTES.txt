@@ -13,5 +13,7 @@ TODO:
 
 - Extract preview to a class
 
+- Rename wrapped camera2 objects so something better.
+
 > Setup GL for the viewfinder
 

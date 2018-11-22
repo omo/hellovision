@@ -2,18 +2,18 @@ package es.flakiness.hellocam
 
 import android.app.Activity
 import android.graphics.ImageFormat
+import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraMetadata
 import android.os.Bundle
 import android.util.Size
-import android.view.SurfaceHolder
 import android.view.View
 import es.flakiness.hellocam.habit.rx.Disposer
 import es.flakiness.hellocam.kamera.app.Kamera
 import es.flakiness.hellocam.kamera.KameraDevice
 import es.flakiness.hellocam.habit.rx.addThen
-import es.flakiness.hellocam.kamera.KameraSurface
+import es.flakiness.hellocam.kamera.KameraOutput
 import es.flakiness.hellocam.kamera.app.ImageSink
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -64,12 +64,11 @@ class MainActivity : Activity() {
         }).subscribe().addTo(disposables)
 
         // https://developer.android.com/reference/android/graphics/ImageFormat.html#RAW_SENSOR
-//        val imageSink = ImageSink.createFrom(device, ImageFormat.JPEG).doOnSuccess { disposables.add(it) }
-        val imageSink = ImageSink.createFrom(device, ImageFormat.RAW_SENSOR).doOnSuccess { disposables.add(it) }
+        val imageSink = ImageSink.createFrom(device, ImageFormat.RAW10).doOnSuccess { disposables.add(it) }
 
-        val surfaceSources = listOf(viewfinder.surfaces, imageSink.map { it.surface }.toObservable())
-        val surfaces : Observable<List<KameraSurface>> = Observable.combineLatest(surfaceSources) {
-            it.fold(ArrayList<KameraSurface>()) { a, i -> a.apply { add(i as KameraSurface) } }
+        val surfaceSources = listOf(viewfinder.surfaces, imageSink.map { it.output }.toObservable())
+        val surfaces : Observable<List<KameraOutput>> = Observable.combineLatest(surfaceSources) {
+            it.fold(ArrayList<KameraOutput>()) { a, i -> a.apply { add(i as KameraOutput) } }
         }
 
         camera = disposables.addThen(

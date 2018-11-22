@@ -8,6 +8,12 @@
     <FrameLayout
         android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></FrameLayout>
-    <!-- TODO(morrita): Add buttons, etc -->
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/shutter_button"
+            android:text="Take!"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 </FrameLayout>

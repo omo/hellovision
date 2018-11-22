@@ -1,18 +1,30 @@
 package es.flakiness.hellocam
 
 import android.content.Context
+import android.graphics.ImageFormat
 import android.graphics.Rect
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraMetadata
 import android.util.AttributeSet
 import android.util.Size
 import android.view.Gravity
 import android.view.SurfaceView
 import android.widget.FrameLayout
 import es.flakiness.hellocam.habit.log.log
+import es.flakiness.hellocam.habit.rx.DisposableRef
+import es.flakiness.hellocam.habit.rx.Disposer
+import es.flakiness.hellocam.kamera.KameraDevice
 import es.flakiness.hellocam.kamera.KameraOutput
 import es.flakiness.hellocam.kamera.ag.fit
 import es.flakiness.hellocam.kamera.ag.toPortrait
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.android.synthetic.main.layout_main.*
+import java.lang.RuntimeException
 
 
 class Viewfinder @JvmOverloads constructor(
@@ -50,6 +62,10 @@ class Viewfinder @JvmOverloads constructor(
             }
         }
 
+    fun resizeBy(device: Single<KameraDevice>) : Observable<Unit> =
+        Observable.combineLatest(device.toObservable(), viewRects, BiFunction<KameraDevice, Rect, Unit> { d, rect ->
+            previewSize = d.fitSizeFor(Size(rect.width(), rect.height()), ImageFormat.PRIVATE)
+        }).map{ Unit }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)

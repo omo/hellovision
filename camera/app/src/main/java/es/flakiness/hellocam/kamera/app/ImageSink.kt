@@ -33,7 +33,7 @@ class ImageSink(val reader: ImageReader, thread: KameraThread) :
         }, thread.handler)
     }
 
-    fun get() : Image? = image.get()
+    fun take() : Image? = image.getAndSet(null)
 
     private fun set(nextImage: Image?) {
         if (nextImage == null) {

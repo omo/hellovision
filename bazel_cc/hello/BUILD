@@ -4,6 +4,7 @@ cc_binary(
     name = "hello",
     srcs = ["helloworld.cc"],
     deps = [
-        "@jsoncpp//:jsoncpp"
+        "@jsoncpp//:jsoncpp",
+        "@libpng//:libpng"
     ]
 )

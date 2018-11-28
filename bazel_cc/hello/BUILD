@@ -4,7 +4,16 @@ cc_binary(
     name = "hello",
     srcs = ["helloworld.cc"],
     deps = [
+        "@com_google_absl//absl/strings",
         "@jsoncpp//:jsoncpp",
-        "@libpng//:libpng"
+        "@png_archive//:png"
     ]
+)
+
+cc_test(
+    name = "hello_test",
+    srcs = [ "hello_test.cc" ],
+    deps = [
+         "@com_google_googletest//:gtest_main",
+    ],
 )

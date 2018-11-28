@@ -3,7 +3,7 @@ licenses(["notice"])  # BSD/MIT-like license
 exports_files(["LICENSE"])
 
 cc_library(
-    name = "libpng",
+    name = "png",
     srcs = [
         "png.c",
         "pngdebug.h",
@@ -35,7 +35,7 @@ cc_library(
     linkopts = ["-lm"],
     visibility = ["//visibility:public"],
     deps = [
-        "@zlib//:zlib",
+        "@zlib_archive//:zlib",
     ],
     data = [
         ":pnglibconf_h",

@@ -12,7 +12,7 @@ http_archive(
 )
 
 http_archive(
-  name = "libpng",
+  name = "png_archive",
   build_file = "//third_party:libpng.BUILD",
   sha256 = "e45ce5f68b1d80e2cb9a2b601605b374bdf51e1798ef1c2c2bd62131dfcf9eef",
   strip_prefix = "libpng-1.6.34",
@@ -23,12 +23,33 @@ http_archive(
 )
 
 http_archive(
-  name = "zlib",
+  name = "zlib_archive",
   build_file = "//third_party:zlib.BUILD",
   sha256 = "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1",
   strip_prefix = "zlib-1.2.11",
   urls = [
     "https://mirror.bazel.build/zlib.net/zlib-1.2.11.tar.gz",
     "https://zlib.net/zlib-1.2.11.tar.gz",
+  ],
+)
+
+http_archive(
+  name = "com_google_googletest",
+  sha256 = "353ab86e35cea1cd386115279cf4b16695bbf21b897bfbf2721cf4cb5f64ade8",
+  strip_prefix = "googletest-997d343dd680e541ef96ce71ee54a91daf2577a0",
+  urls = [
+    "https://mirror.bazel.build/github.com/google/googletest/archive/997d343dd680e541ef96ce71ee54a91daf2577a0.zip",
+    "https://github.com/google/googletest/archive/997d343dd680e541ef96ce71ee54a91daf2577a0.zip",
+  ],
+)
+
+http_archive(
+  name = "com_google_absl",
+  build_file = "//third_party:abseil.BUILD",
+  sha256 = "3cf6132129ba87f0781c383bfaf381b7174b5818e81fffcc5d04bb451154f0f2",
+  strip_prefix = "abseil-cpp-f95179062eb65ce40895cc76f1398cce25394369",
+  urls = [
+    "https://mirror.bazel.build/github.com/abseil/abseil-cpp/archive/f95179062eb65ce40895cc76f1398cce25394369.tar.gz",
+    "https://github.com/abseil/abseil-cpp/archive/f95179062eb65ce40895cc76f1398cce25394369.tar.gz",
   ],
 )

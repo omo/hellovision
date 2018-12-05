@@ -24,9 +24,9 @@ class HelloTest {
     @Test
     fun singleFromObservable() {
         val toNext = 123
-        val single = Single.create<Int>({ src ->
+        val single = Single.create<Int> { src ->
             src.onSuccess(toNext)
-        })
+        }
 
         single.doOnSuccess { fromNext = it }.subscribe()
         Truth.assertThat(fromNext).isEqualTo(toNext)

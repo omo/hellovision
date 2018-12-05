@@ -4,9 +4,9 @@ cc_binary(
     name = "hello",
     srcs = ["helloworld.cc"],
     deps = [
+        "//hello/helpers",
         "@com_google_absl//absl/strings",
         "@jsoncpp//:jsoncpp",
-        "@png_archive//:png"
     ]
 )
 

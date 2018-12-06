@@ -7,18 +7,16 @@
 // There are here just to confirm they are buildable.
 #include "json/json.h"
 #include "absl/strings/string_view.h"
+#include "gflags/gflags.h"
 
-int main() {
-    hv::Image<uint8_t, 3> image(256, 256);
-    for (size_t y = 0; y < image.height(); ++y) {
-        for (size_t x = 0; x < image.width(); ++x) {
-            uint8_t luminance = y;
-            image.set(x, y, 0, luminance);
-            image.set(x, y, 1, luminance);
-            image.set(x, y, 2, luminance);
-        }
-    }
+DEFINE_string(out, "/tmp/hello.png", "Full path filename to output png.");
+DEFINE_string(in, "/tmp/hello.raw16", "Full path filename to input raw16 binary.");
 
-    write_png("/home/omo/tmp/hello.png", image);
+int main(int argc, char** argv) {
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+
+    hv::RawImage raw = hv::read_phone_raw16(FLAGS_in);
+
+    hv::write_png(FLAGS_out, hv::to_rgb_as_is(raw));
     std::cout << "Hello world!" << std::endl;    
 }

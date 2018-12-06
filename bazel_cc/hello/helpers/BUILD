@@ -3,6 +3,7 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "helpers",
     srcs = [
+      "image.cc",
       "io.cc"
     ],
     hdrs = [

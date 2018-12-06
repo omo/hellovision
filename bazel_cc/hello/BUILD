@@ -6,6 +6,7 @@ cc_binary(
     deps = [
         "//hello/helpers",
         "@com_google_absl//absl/strings",
+        "@com_github_gflags_gflags//:gflags",
         "@jsoncpp//:jsoncpp",
     ]
 )

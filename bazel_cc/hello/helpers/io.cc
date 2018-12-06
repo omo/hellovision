@@ -65,6 +65,7 @@ void write_png(const std::string& filename, const Image<uint8_t, 3>& image) {
     png_free(png, rows);
     png_destroy_write_struct(&png, &info);
 
+    hv::Trace tt("write_png/write");
     std::ofstream out{filename};
     out.write(reinterpret_cast<const char*>(buffer.data()), buffer.bytes());
 }

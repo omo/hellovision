@@ -23,9 +23,9 @@ public:
         bytes_.insert(bytes_.end(), data, data + length);
     }
 
-    const uint8_t* bytes() const { return bytes_.data(); }
+    const uint8_t* data() const { return bytes_.data(); }
 
-    size_t size() const { return bytes_.size(); }
+    size_t bytes() const { return bytes_.size(); }
 private:
     std::vector<uint8_t> bytes_;
 };
@@ -66,7 +66,7 @@ void write_png(const std::string& filename, const Image<uint8_t, 3>& image) {
     png_destroy_write_struct(&png, &info);
 
     std::ofstream out{filename};
-    out.write(reinterpret_cast<const char*>(buffer.bytes()), buffer.size());
+    out.write(reinterpret_cast<const char*>(buffer.data()), buffer.bytes());
 }
 
 RawImage read_phone_raw16(const std::string& filename) {

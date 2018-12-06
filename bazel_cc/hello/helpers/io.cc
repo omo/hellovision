@@ -1,6 +1,7 @@
 
 #include <vector>
 #include "hello/helpers/io.h"
+#include "hello/helpers/trace.h"
 #include "png.h"
 #include <iostream>
 #include <fstream>
@@ -36,6 +37,7 @@ void handle_error(png_structp png_ptr, png_const_charp error_msg) {
 } // namespace
 
 void write_png(const std::string& filename, const Image<uint8_t, 3>& image) {
+    hv::Trace t("write_png");
     // TODO(morrita): Get the depth it from Image somwhow.
     int depth = 8;
 
@@ -72,6 +74,7 @@ RawImage read_phone_raw16(const std::string& filename) {
 }
 
 RawImage read_raw16(const std::string& filename, size_t width, size_t height) {
+    hv::Trace t("read_raw16");
     RawImage image{width, height};
     std::ifstream file(filename);
     file.read(reinterpret_cast<char*>(image.data()), image.bytes());

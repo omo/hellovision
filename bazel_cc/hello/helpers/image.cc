@@ -1,8 +1,10 @@
 #include "hello/helpers/image.h"
+#include "hello/helpers/trace.h"
 
 namespace hv {
 
 RgbImage to_rgb_as_is(const hv::RawImage& raw) {
+    hv::Trace t("to_rgb_as_is");
     RgbImage rgb{raw.width(), raw.height()};
 
     for (size_t y = 0; y < raw.height(); ++y) {

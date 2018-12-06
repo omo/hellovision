@@ -4,13 +4,17 @@ cc_library(
     name = "helpers",
     srcs = [
       "image.cc",
-      "io.cc"
+      "io.cc",
+      "trace.cc",
     ],
     hdrs = [
       "image.h",
-      "io.h"
+      "io.h",
+      "trace.h",
     ],
     deps = [
-        "@png_archive//:png"
+        "@png_archive//:png",
+        "@com_github_gflags_gflags//:gflags",
+        "@com_google_absl//absl/time",
     ]
 )

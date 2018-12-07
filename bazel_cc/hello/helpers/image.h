@@ -48,10 +48,11 @@ private:
     std::vector<T> buffer_;
 };
 
-typedef Image<uint16_t, 1> RawImage;
+typedef Image<uint16_t, 1> BayerImage;
+typedef Image<uint16_t, 3> RawImage;
 typedef Image<uint8_t, 3> RgbImage;
 
-RgbImage to_rgb_as_is(const hv::RawImage& raw);
+RgbImage to_rgb_as_is(const hv::BayerImage& raw);
 
 } // namespace hv
 

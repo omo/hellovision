@@ -3,7 +3,7 @@
 
 namespace hv {
 
-RgbImage to_rgb_as_is(const hv::RawImage& raw) {
+RgbImage to_rgb_as_is(const hv::BayerImage& raw) {
     hv::Trace t("to_rgb_as_is");
     RgbImage rgb{raw.width(), raw.height()};
 

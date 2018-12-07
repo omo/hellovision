@@ -70,13 +70,13 @@ void write_png(const std::string& filename, const Image<uint8_t, 3>& image) {
     out.write(reinterpret_cast<const char*>(buffer.data()), buffer.bytes());
 }
 
-RawImage read_phone_raw16(const std::string& filename) {
+BayerImage read_phone_raw16(const std::string& filename) {
     return read_raw16(filename, 4032, 3032);
 }
 
-RawImage read_raw16(const std::string& filename, size_t width, size_t height) {
+BayerImage read_raw16(const std::string& filename, size_t width, size_t height) {
     hv::Trace t("read_raw16");
-    RawImage image{width, height};
+    BayerImage image{width, height};
     std::ifstream file(filename);
     file.read(reinterpret_cast<char*>(image.data()), image.bytes());
     return image;

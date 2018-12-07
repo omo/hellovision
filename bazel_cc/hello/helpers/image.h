@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+#include <algorithm>
 
 namespace hv {
 
@@ -28,9 +29,9 @@ public:
       return y * width_ * Pixels + x * Pixels + c;
     }
 
-    const T* row(int y) const {
-      return buffer_.data() + (y * width_ * Pixels);
-    }
+    const T* row(int y) const { return buffer_.data() + (y * width_ * Pixels); }
+    T* row(int y) { return buffer_.data() + (y * width_ * Pixels); }
+    size_t row_size() const { return width_ * Pixels; }
 
     void set(size_t x, size_t y, size_t c, T value) {
         // TODO(morrita): Some assert here.
@@ -40,6 +41,16 @@ public:
     T get(size_t x, size_t y, size_t c) const {
         // TODO(morrita): Some assert here.
         return buffer_[index(x, y, c)];
+    }
+
+     Image vflip() const {
+        Image result(width(), height());
+
+        for (auto y = 0u; y < height(); ++y) {
+            std::copy(row(y), row(y) + row_size(), result.row(height() - y - 1));
+        }
+
+        return result;
     }
 
 private:
@@ -53,6 +64,8 @@ typedef Image<uint16_t, 3> RawImage;
 typedef Image<uint8_t, 3> RgbImage;
 
 RgbImage to_rgb_as_is(const hv::BayerImage& raw);
+RgbImage to_rgb_as_is(const hv::RawImage& raw);
+
 
 } // namespace hv
 

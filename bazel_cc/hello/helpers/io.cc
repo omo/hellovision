@@ -50,7 +50,8 @@ void write_png(const std::string& filename, const Image<uint8_t, 3>& image) {
     png_set_IHDR(
         png, info, image.width(), image.height(), depth,
         PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-    // png_set_gAMA(png, info, 1.0);
+    png_set_gAMA(png, info, 1.0);
+    png_set_compression_level(png, 0);
 
 
     png_byte** rows = reinterpret_cast<png_byte**>(png_malloc(png, image.height() * sizeof(png_byte *)));

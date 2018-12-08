@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cassert>
 #include <vector>
 #include <algorithm>
 
@@ -13,8 +14,8 @@ class Image {
 public:
     Image(const Image&) = default;
     Image(size_t w, size_t h)
-        : width_{w}, height_{h}, buffer_(w*h*Pixels, 0)
-    {}
+        : width_{w}, height_{h}, buffer_(w*h*Pixels, 0) {}
+    Image() : Image(0, 0) {}
 
     size_t width() const { return width_; }
     size_t height() const { return height_; }
@@ -59,13 +60,56 @@ private:
     std::vector<T> buffer_;
 };
 
+// TODO(morrita): Consider moving algotirhms to a separate file.
+template<typename T, size_t Pixel>
+inline std::vector<Image<T, 1>> split(const Image<T, Pixel>& src) {
+    std::vector<Image<T, 1>> result;
+    for (auto i = 0u; i < Pixel; ++i) {
+        Image<T, 1> slice(src.width(), src.height());
+        for (auto y = 0u; y < src.height(); ++y) {
+            for (auto x = 0u; x < src.width(); ++x) {
+                slice.set(x, y, 1, src.get(x, y, i));
+            }
+        }
+
+        result.push_back(slice);
+    }
+
+    return result;
+}
+
+template<typename T, size_t Pixel>
+inline Image<T, Pixel> combine(const std::vector<Image<T, 1>>& components) {
+    static_assert(0 < Pixel);
+    assert(components.size() == Pixel);
+
+    Image<T, Pixel> result(components[0].width(), components[0].height());
+    assert(std::find_if(components.begin(), components.end(), [&result](auto i) {
+        return i.width() != result.width() && i.height() != result.height(); }) == components.end());
+    for (auto y = 0u; y < result.height(); ++y) {
+        for (auto x = 0u; x < result.width(); ++x) {
+            for (auto i = 0u; i < Pixel; ++i) {
+                result.set(x, y, i, components[i].get(x, y, 1));
+            }
+        }
+    }
+
+    return result;
+}
+
+
 typedef Image<uint16_t, 1> BayerImage;
 typedef Image<uint16_t, 3> RawImage;
 typedef Image<uint8_t, 3> RgbImage;
 
+typedef Image<uint16_t, 1> Plane16;
+typedef Image<uint8_t, 1> Plane8;
+
 RgbImage to_rgb_as_is(const hv::BayerImage& raw);
 RgbImage to_rgb_as_is(const hv::RawImage& raw);
 RawImage to_raw(const BayerImage& src);
+
+Plane8 to_8(const Plane16& p);
 
 } // namespace hv
 

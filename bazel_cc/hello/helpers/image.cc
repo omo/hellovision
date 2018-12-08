@@ -24,7 +24,6 @@ RgbImage to_rgb_as_is(const hv::RawImage& raw) {
     RgbImage rgb{raw.width(), raw.height()};
     for (size_t y = 0; y < raw.height(); ++y) {
         for (size_t x = 0; x < raw.width(); ++x) {
-            uint8_t lumi = raw.get(x, y, 0) >> 2; 
             // TODO(morrita): Clamp. It could be bigger than 10bit range.
             rgb.set(x, y, 0, raw.get(x, y, 0) >> 2);
             rgb.set(x, y, 1, raw.get(x, y, 1) >> 2);
@@ -36,6 +35,7 @@ RgbImage to_rgb_as_is(const hv::RawImage& raw) {
 }
 
 RawImage to_raw(const BayerImage& src) {
+    hv::Trace t("to_raw");
     RawImage dst(src.width(), src.height());
 
     for (auto y = 1u; y < dst.height() - 1; ++y) {
@@ -96,6 +96,18 @@ RawImage to_raw(const BayerImage& src) {
     }
 
     return dst;
+}
+
+Plane8 to_8(const Plane16& p) {
+    hv::Trace t("to_8");
+    Plane8 result(p.width(), p.height());
+    for (auto y = 0u; y < p.height(); ++y) {
+        for (auto x  = 0u; x < p.width(); ++x) {
+           result.set(x, y, 1, p.get(x, y, 1) >> 2);
+        }
+    }
+
+    return result;
 }
 
 }

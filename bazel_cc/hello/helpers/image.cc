@@ -35,4 +35,67 @@ RgbImage to_rgb_as_is(const hv::RawImage& raw) {
     return rgb;
 }
 
+RawImage to_raw(const BayerImage& src) {
+    RawImage dst(src.width(), src.height());
+
+    for (auto y = 1u; y < dst.height() - 1; ++y) {
+        for (auto x = 1u; x < dst.width() - 1; ++x) {
+            auto dx = x % 2;
+            auto dy = y % 2;
+            bool isr = dx == 1 && dy == 1;
+            bool isb = dx == 0 && dy == 0;
+            if (isr || isb) {
+                auto here = src.get(x, y, 0);
+                auto diag = (src.get(x + 0, y + 1, 0) + 
+                             src.get(x + 0, y - 1, 0) + 
+                             src.get(x + 1, y + 0, 0) + 
+                             src.get(x - 1, y + 0, 0)) / 4;
+                auto adjt = (src.get(x + 1, y - 1, 0) + 
+                             src.get(x + 1, y + 1, 0) + 
+                             src.get(x - 1, y - 1, 0) + 
+                             src.get(x - 1, y + 1, 0)) / 4;
+                if (isr) {
+                    // Red pixel.
+                    auto r = here;
+                    auto g = diag;
+                    auto b = adjt;
+                    dst.set(x, y, 0, r);
+                    dst.set(x, y, 1, g);
+                    dst.set(x, y, 2, b);
+                } else  {
+                    // Blue Pixel.
+                    auto r = adjt;
+                    auto g = diag;
+                    auto b = here;
+                    dst.set(x, y, 0, r);
+                    dst.set(x, y, 1, g);
+                    dst.set(x, y, 2, b);
+                }
+            } else { // Is green
+                auto here = src.get(x, y, 0);
+                auto havg = (src.get(x - 1, y, 0) + src.get(x + 1, y, 0)) / 2;
+                auto vavg = (src.get(x, y - 1, 0) + src.get(x, y + 1, 0)) / 2;
+                bool isvg = dx == 1 && dy == 0;
+                if (isvg) {
+                    auto r = vavg;
+                    auto g = here;
+                    auto b = havg;
+                    dst.set(x, y, 0, r);
+                    dst.set(x, y, 1, g);
+                    dst.set(x, y, 2, b);
+                } else {
+                    auto r = havg;
+                    auto g = here;
+                    auto b = vavg;
+                    dst.set(x, y, 0, r);
+                    dst.set(x, y, 1, g);
+                    dst.set(x, y, 2, b);
+                }
+            }
+        }
+    }
+
+    return dst;
+}
+
 }

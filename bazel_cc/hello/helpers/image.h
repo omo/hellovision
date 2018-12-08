@@ -65,7 +65,7 @@ typedef Image<uint8_t, 3> RgbImage;
 
 RgbImage to_rgb_as_is(const hv::BayerImage& raw);
 RgbImage to_rgb_as_is(const hv::RawImage& raw);
-
+RawImage to_raw(const BayerImage& src);
 
 } // namespace hv
 

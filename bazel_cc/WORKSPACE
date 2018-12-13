@@ -60,3 +60,10 @@ git_repository(
     commit = "e171aa2d15ed9eb17054558e0b3a6a413bb01067",
     remote = "https://github.com/gflags/gflags.git",
 )
+
+# https://github.com/halide/Halide/blob/master/bazel/README_bazel.md
+# TODO(morrita): Commit prebuilt binary.
+local_repository(
+  name = "halide",
+  path = "/home/omo/src/Halide/distrib",
+)

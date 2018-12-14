@@ -5,6 +5,8 @@ cc_binary(
   srcs = ["main.cc"],
   deps = [
     ":hello",
+    "//hello/helpers",
+    "@com_github_gflags_gflags//:gflags",
     "@halide//:halide_buffer",
   ]
 )

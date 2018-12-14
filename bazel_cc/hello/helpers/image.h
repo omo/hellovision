@@ -104,9 +104,11 @@ typedef Image<uint8_t, 3> RgbImage;
 
 typedef Image<uint16_t, 1> Plane16;
 typedef Image<uint8_t, 1> Plane8;
+typedef Image<float, 1> PlaneFloat;
 
 RgbImage to_rgb_as_is(const hv::BayerImage& raw);
 RgbImage to_rgb_as_is(const hv::RawImage& raw);
+RgbImage to_rgb_as_is(const hv::PlaneFloat& plane);
 RawImage to_raw(const BayerImage& src);
 
 Plane8 to_8(const Plane16& p);

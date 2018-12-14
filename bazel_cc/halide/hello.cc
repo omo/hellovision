@@ -10,13 +10,14 @@ class HelloHalide : public Halide::Generator<HelloHalide> {
   GeneratorParam<bool> vectorize{"vectorize", true};
   GeneratorParam<bool> parallelize{"parallelize", true};
 
-  Input<Buffer<float>> input{"input", 2};
+  // Input<Buffer<float>> input{"input", 2};
   Input<float> scale{"scale"};
 
   Output<Buffer<float>> output{"output", 2};
 
   void generate() {
-    output(x, y) = input(x, y) * scale;
+    // output(x, y) = input(x, y) * scale;
+    output(x, y) = (x + y) * scale;
   }
   void schedule() {
     if (vectorize) {

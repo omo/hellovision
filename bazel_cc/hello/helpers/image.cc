@@ -34,6 +34,23 @@ RgbImage to_rgb_as_is(const hv::RawImage& raw) {
     return rgb;
 }
 
+RgbImage to_rgb_as_is(const hv::PlaneFloat& pf) {
+    hv::Trace t("to_rgb_as_is");
+    RgbImage rgb{pf.width(), pf.height()};
+
+    for (size_t y = 0; y < rgb.height(); ++y) {
+        for (size_t x = 0; x < rgb.width(); ++x) {
+            uint8_t lumi = static_cast<uint8_t>(pf.get(x, y, 0) * 255.0f);
+            rgb.set(x, y, 0, lumi);
+            rgb.set(x, y, 1, lumi);
+            rgb.set(x, y, 2, lumi);
+        }
+    }
+
+    return rgb;
+}
+
+
 RawImage to_raw(const BayerImage& src) {
     hv::Trace t("to_raw");
     RawImage dst(src.width(), src.height());

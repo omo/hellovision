@@ -5,6 +5,7 @@ cc_binary(
   srcs = ["main.cc"],
   deps = [
     ":hello",
+    ":lesson02",
     "//hello/helpers",
     "@com_github_gflags_gflags//:gflags",
     "@halide//:halide_buffer",
@@ -14,5 +15,11 @@ cc_binary(
 halide_library(
   name = "hello",
   srcs = ["hello.cc"],
+  extra_outputs=["stmt", "schedule"],
+)
+
+halide_library(
+  name = "lesson02",
+  srcs = ["lesson02.cc"],
   extra_outputs=["stmt", "schedule"],
 )

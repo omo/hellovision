@@ -7,6 +7,7 @@
 namespace hv {
 
 void write_png(const std::string& filename, const Image<uint8_t, 3>& image);
+RgbImage read_png(const std::string& filename);
 
 BayerImage read_phone_raw16(const std::string& filename);
 BayerImage read_raw16(const std::string& filename, size_t width, size_t height);

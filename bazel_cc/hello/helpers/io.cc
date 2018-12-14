@@ -34,6 +34,23 @@ void handle_error(png_structp png_ptr, png_const_charp error_msg) {
     std::cerr << error_msg << std::endl;
 }
 
+class Reader {
+public:
+    Reader(std::istream& ins) : ins_{ins} {}
+
+    static void read_callback(png_structp png, png_bytep data, png_size_t bytes) {
+        auto self = reinterpret_cast<Reader*>(png_get_io_ptr(png));
+        self->read(data, bytes);
+    }
+
+    void read(png_bytep data, png_size_t bytes) {
+        ins_.read(reinterpret_cast<char*>(data), bytes);
+    }
+
+private:
+    std::istream& ins_;
+};
+
 } // namespace
 
 void write_png(const std::string& filename, const Image<uint8_t, 3>& image) {
@@ -69,6 +86,50 @@ void write_png(const std::string& filename, const Image<uint8_t, 3>& image) {
     hv::Trace tt("write_png/write");
     std::ofstream out{filename};
     out.write(reinterpret_cast<const char*>(buffer.data()), buffer.bytes());
+}
+
+RgbImage read_png(const std::string& filename) {
+    hv::Trace t("read_png");
+    png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_infop info = png_create_info_struct(png);
+    png_infop end_info = png_create_info_struct(png);
+    png_set_error_fn(png, NULL, handle_error, handle_error);
+    std::ifstream ins{filename};
+    Reader reader{ins};
+    png_set_read_fn(png, &reader, &Reader::read_callback);
+
+    png_read_info(png, info);
+
+    int depth  = png_get_bit_depth(png, info);
+    if(depth != 8) {
+        std::cerr << "Unsupported depth:" << depth << std::endl;
+        abort();
+    }
+
+    int type = png_get_color_type(png, info);
+    if(type != PNG_COLOR_TYPE_RGB) {
+        // TODO(morrita): Support RGBA and other formats.
+        std::cerr << "Unsupported type:" << type << std::endl;
+        abort();
+    }
+
+    int width = png_get_image_width(png, info);
+    int height = png_get_image_height(png, info);
+    RgbImage result(static_cast<size_t>(width), static_cast<size_t>(height));
+
+    png_read_update_info(png, info);
+
+    png_bytep* rows = (png_bytep*)malloc(sizeof(png_bytep) * height);
+    for (auto y = 0; y < height; ++y) {
+        rows[y] = result.row(size_t(y));
+    }
+
+    png_read_image(png, rows);
+
+    png_free(png, rows);
+    png_destroy_read_struct(&png, &info, &end_info);
+
+    return result;
 }
 
 BayerImage read_phone_raw16(const std::string& filename) {

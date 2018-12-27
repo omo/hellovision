@@ -17,6 +17,7 @@ public:
         : width_{w}, height_{h}, buffer_(w*h*Pixels, 0) {}
     Image() : Image(0, 0) {}
 
+    bool empty() const { return buffer_.empty(); }
     size_t width() const { return width_; }
     size_t height() const { return height_; }
 

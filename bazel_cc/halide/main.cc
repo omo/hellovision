@@ -1,4 +1,5 @@
 
+#include "halide/mixedbag.h"
 #include "halide/hello.h"
 #include "halide/lesson02.h"
 #include "HalideBuffer.h"
@@ -83,12 +84,18 @@ int main(int argc, char** argv) {
   } else if (FLAGS_pipeline == "lesson02") {
     ByteBuffer in = from_rgb(hv::read_png(FLAGS_in));
     result = to_rgb(run_lesson02(in));
+  } else if (FLAGS_pipeline == "lesson04") {
+    run_lesson04();
+  } else if (FLAGS_pipeline == "lesson05") {
+    run_lesson05();
   } else {
     std::cerr << "Unknown pipeline:" << FLAGS_pipeline << std::endl;
     abort();
   }
 
-  hv::write_png(FLAGS_out, result);
+  if (!result.empty()) {
+    hv::write_png(FLAGS_out, result);
+  }
 
   std::cout << "Hello Halide!" << std::endl;
   return 0;

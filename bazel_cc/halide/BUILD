@@ -8,6 +8,8 @@ cc_binary(
     ":hello",
     ":lesson02",
     ":lesson04",
+    ":lesson07",
+    ":lesson16",
     "//hello/helpers",
     "@com_github_gflags_gflags//:gflags",
     "@halide//:halide_buffer",
@@ -23,7 +25,20 @@ halide_library(
 halide_library(
   name = "lesson02",
   srcs = ["lesson02.cc"],
-  debug_codegen_level = 2, # The default is zero.
+  debug_codegen_level = 0, # The default is zero.
+  extra_outputs=["stmt", "html", "schedule"],
+)
+
+halide_library(
+  name = "lesson07",
+  srcs = ["lesson07.cc"],
+  extra_outputs=["stmt", "html", "schedule"],
+)
+
+halide_library(
+  name = "lesson16",
+  srcs = ["lesson16.cc"],
+  generator_args = "layout=interleaved",
   extra_outputs=["stmt", "html", "schedule"],
 )
 

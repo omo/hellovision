@@ -148,3 +148,40 @@ void run_lesson05() {
 
   }
 }
+
+void run_lesson09() {
+  h::Var x("x"), y("y");
+
+  {
+    h::Func f;
+    f(x, y) = (x + y)/100.0f;
+    h::RDom r(0, 50);
+    f(x, r) = f(x, r) * f(x, r);
+    f.print_loop_nest();
+    h::Buffer<float> result = f.realize(100, 100);
+  }
+}
+
+// http://halide-lang.org/tutorials/tutorial_lesson_13_tuples.html
+void run_lesson13() {
+  h::Var x;
+  h::Func input_func;
+  input_func(x) = h::sin(x);
+  h::Buffer<float> input = input_func.realize(100);
+
+  h::Func arg_max;
+  arg_max() = {0, input(0)};
+  h::RDom r(1, 99);
+  h::Expr oi = arg_max()[0];
+  h::Expr ov = arg_max()[1];
+  h::Expr ni = h::select(oi < input(r), r, oi);
+  h::Expr nv = h::max(ov, input_func(r));
+  arg_max() = {ni, nv};
+
+  h::Realization result = arg_max.realize();
+  // Needs explicit assignments to tell the buffer type.
+  h::Buffer<int> r0 = result[0];
+  h::Buffer<float> r1 = result[1];
+  std::cout << "arg:" << r0(0) << std::endl;
+  std::cout << "max:" << r1(0) << std::endl;
+}
